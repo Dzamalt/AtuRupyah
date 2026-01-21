@@ -15,8 +15,11 @@ load_dotenv()
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
 
+ckeditor = CKEditor(app)
+Bootstrap5(app)
 
-
+login_manager = LoginManager()
+login_manager.init_app(app)
 @app.route('/')
 def hello_world():
     return 'Hello World!'
