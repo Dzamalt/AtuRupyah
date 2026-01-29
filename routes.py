@@ -7,6 +7,7 @@ from services import add_stock, create_sale
 from models import User, Product, Inventory, Sale
 from extensions import db
 from services import product_convertible, is_low_stock
+from analytics import (load_sales_df, total_units_sold, total_revenue,top_products,daily_sales)
 
 
 
@@ -92,11 +93,26 @@ def delete_product():
 @bp.route("/add_stock/<int:pid>/<int:amount>")
 def add_stock_route(pid, amount):
     add_stock(pid, amount)
-    return "Stock added"
+    return "Hello World! Stock added"
 
 
 @bp.route("/make_sale/<int:pid>/<int:amount>")
 def sale_route(pid, amount):
     create_sale(pid, amount, datetime.now().date())
-    return "Sale created"
+    return "Hello World! Sale created"
+
+
+@bp.route("/analytics")
+def analytics_dashboard():
+    df = load_sales_df()
+    total_sold = total_units_sold(df)
+    total_sale = total_revenue(df)
+    best_product = top_products(df)
+    sale_daily = daily_sales(df)
+    return {
+        "total_sold": total_sold,
+        "total_sale": total_sale,
+        "best_product": best_product.to_dict(),
+        "sale_daily": sale_daily,
+    }
 
