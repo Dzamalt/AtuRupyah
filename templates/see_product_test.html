@@ -9,6 +9,9 @@
         <p>{{product.name}}</p> <br>
         <p>{{product.inventory.quantity}}</p> <br>
         <p>{{product.sale[0].sale_date}}</p> <br>
+        {%if product.lowstock%}
+            <p>{{product.name}} is low stock</p>
+        {%endif%}
     {%endfor%}
 </body>
 </html>
