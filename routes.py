@@ -1,13 +1,14 @@
-from flask import Blueprint, render_template
+from flask import Blueprint, render_template, redirect, request, jsonify
 from datetime import datetime
 
-from services import add_stock, create_sale
+from services import add_stock, create_sale, inventory_convertible, product_convertible, is_low_stock, create_product, \
+    sale_convertible, update_forecast
 
 #temporary
 from models import User, Product, Inventory, Sale
 from extensions import db
-from services import product_convertible, is_low_stock
-from analytics import (load_sales_df, total_units_sold, total_revenue,top_products,daily_sales)
+from analytics import (load_sales_df, total_units_sold, total_revenue,top_products,daily_sales,moving_average)
+from forms import ProductForm
 
 
 
@@ -15,71 +16,53 @@ bp = Blueprint("main", __name__)
 
 @bp.route('/')
 def hello_world():
-    return 'Hello World!'
+    return render_template("index.html")
 
-@bp.route('/add_product')
+@bp.route('/add_product',methods=['GET','POST'])
 def add_product():
-    user = User(
-        username = "bihi",
-        password = "12345",
-        email = "dzam@ggwp.com"
-    )
-    db.session.add(user)
-    db.session.commit()
-    product = Product(
-        user_id=1,
-        name="Laptop",
-        category="Electronics",
-        price=1200.00
-    )
-    db.session.add(product),
-    db.session.commit()
-    inventory = Inventory(
-        product_id=product.id,
-        quantity=20,
-        reorder_level=5
-    )
-    db.session.add(inventory)
-    db.session.commit()
-    custom_date = datetime(2026, 1, 15, 14, 30)
-    sale = Sale(
-        product=product,
-        quantity_sold=3,
-        price_at_sale=product.price,
-        sale_date=custom_date
-    )
-
-    db.session.add(sale)
-    db.session.commit()
-    custom_date1 = datetime(2026, 2, 16, 15, 31)
-    sale1 = Sale(
-        product=product,
-        quantity_sold=4,
-        price_at_sale=product.price,
-        sale_date=custom_date1
-    )
-
-    db.session.add(sale1)
-    db.session.commit()
-    print("added product")
-    return "Hello World! Product added successfully"
+    form = ProductForm()
+    if form.validate_on_submit():
+        print(form.name.data)
+        create_product(
+            name=str(form.name.data),
+            category=str(form.category.data),
+            price=float(form.price.data),
+            initial_quantity=int(form.quantity.data),
+            reorder_level=int(form.reorder_level.data)
+        )
+        return redirect("/")
+    return render_template("modify_product.html",form=form,is_edit=False)
 
 
 @bp.route('/see_product')
 def see_product():
     result = db.session.execute(db.select(Product))
-    all_products = [product_convertible(item) for item in result.scalars()]
+    all_products = [product_convertible(item,include_inventory=True,include_sale=True) for item in result.scalars()]
     for product in all_products:
         product["lowstock"] = is_low_stock(product["id"])
+    print(all_products[0])
     return render_template("see_product_test.html", all_products=all_products)
 
 
-@bp.route('/edit_product')
-def edit_product():
-    product = db.session.query(Product).order_by(Product.id.desc()).first()
-    product.name = "LaptopMSI"
-    db.session.commit()
-    return 'Hello World! Product edit successfully'
+@bp.route('/edit_product/<int:product_id>',methods=['GET','POST'])
+def edit_product(product_id):
+    product= db.get_or_404(Product, product_id)
+    form = ProductForm(obj=product)
+
+    if request.method == 'GET' and product.inventory:
+        form.quantity.data = product.inventory.quantity
+        form.reorder_level.data = product.inventory.reorder_level
+    if form.validate_on_submit():
+        product.name = form.name.data
+        product.category = form.category.data
+        product.price = form.price.data
+
+        product.inventory.quantity = form.quantity.data
+        product.inventory.reorder_level = form.reorder_level.data
+
+        db.session.commit()
+        return redirect("/")
+    return render_template("modify_product.html",form=form,is_edit=True)
 
 
 @bp.route('/delete_product')
@@ -104,15 +87,46 @@ def sale_route(pid, amount):
 
 @bp.route("/analytics")
 def analytics_dashboard():
+    update_forecast(2,mtd="delete")
     df = load_sales_df()
     total_sold = total_units_sold(df)
     total_sale = total_revenue(df)
     best_product = top_products(df)
     sale_daily = daily_sales(df)
+    moving = moving_average(7,2)
+    product = db.get_or_404(Product, 2)
+    print(product.inventory.quantity)
+    print(moving.iloc[-1])
+    if product.inventory.quantity < moving['predicted_quantity'].iloc[-1]:
+        print(f"restock this dude by like atleast{moving['predicted_quantity'].iloc[-1] - product.inventory.quantity}")#TODO: replace print with dict key on the product
     return {
         "total_sold": total_sold,
         "total_sale": total_sale,
         "best_product": best_product.to_dict(),
         "sale_daily": sale_daily,
+        "ma": moving.to_dict()
     }
 
+#test routes
+
+@bp.route("/get_product_json",methods=['GET','POST'])
+def get_product_json():
+    query_category = request.args.get("category")
+    if query_category:
+        product = db.session.execute(db.select(Product).where(Product.category == query_category)).scalar()
+        if not product:
+            return jsonify({"error": "Product not found"})
+        else:
+            return jsonify(product_convertible(product))
+    else:
+        return jsonify({"error": "Category not found"})
+
+@bp.route("/get_inventory_json",methods=['GET','POST'])
+def get_inventory_json():
+    product = db.get_or_404(Product, 2)
+    return jsonify(inventory_convertible(product.inventory))
+
+@bp.route("/get_sale_json",methods=['GET','POST'])
+def get_sale_json():
+    product = db.get_or_404(Product, 2)
+    return jsonify(sale_convertible(product.sales))

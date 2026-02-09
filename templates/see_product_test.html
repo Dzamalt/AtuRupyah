@@ -6,11 +6,18 @@
 </head>
 <body>
     {% for product in all_products %}
-        <p>{{product.name}}</p> <br>
-        <p>{{product.inventory.quantity}}</p> <br>
-        <p>{{product.sale[0].sale_date}}</p> <br>
+        <p>{{product.name}}</p>
+        <p>{{product.inventory.quantity}}</p>
+        {% if product.sale and product.sale|length > 0 %}
+            <p>{{ product.sale[0].sale_date }}</p>
+        {% else %}
+            <p>No sales yet</p>
+        {% endif %}
+
         {%if product.lowstock%}
             <p>{{product.name}} is low stock</p>
+        <br>
+    <br>
         {%endif%}
     {%endfor%}
 </body>

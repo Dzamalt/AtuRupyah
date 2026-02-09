@@ -12,3 +12,10 @@ class RegisterForm(FlaskForm):
     password = PasswordField('Password', validators=[DataRequired()])
     password2 = PasswordField('', validators=[DataRequired(), EqualTo('password')])
     submit = SubmitField('Register')
+class ProductForm(FlaskForm):
+    name = StringField('Name', validators=[DataRequired()])
+    category = StringField('Category', validators=[DataRequired()])
+    price = StringField('Price', validators=[DataRequired()])
+    quantity = StringField('Quantity', validators=[DataRequired()])
+    reorder_level = StringField('Reorder Level', validators=[DataRequired()])
+    submit = SubmitField('Confirm')

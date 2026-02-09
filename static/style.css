@@ -1,0 +1,22 @@
+.container {
+    width: 400px;
+    margin: 50px auto;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-control {
+    width: 100%;
+    padding: 8px;
+}
+
+.btn {
+    padding: 8px 12px;
+    margin-right: 5px;
+}
+
+.error {
+    color: red;
+}

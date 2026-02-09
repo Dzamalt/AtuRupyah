@@ -12,7 +12,6 @@ class User(db.Model):
     email: Mapped[str] = mapped_column(String(120), unique=True, nullable=False)
     password: Mapped[str] = mapped_column(String(120), nullable=False)
 
-    # Optional: backref to products if you want easy access
     products: Mapped[List["Product"]] = relationship("Product", back_populates="user")
 
 
@@ -36,6 +35,14 @@ class Product(db.Model):
 
     sales: Mapped[List["Sale"]] = relationship(
         "Sale",
+        back_populates="product",
+        cascade="all, delete-orphan",
+        passive_deletes=True
+    )
+
+    #to be added
+    forecasts: Mapped[List["Forecast"]] = relationship(
+        "Forecast",
         back_populates="product",
         cascade="all, delete-orphan",
         passive_deletes=True
@@ -66,3 +73,14 @@ class Sale(db.Model):
     price_at_sale: Mapped[Numeric] = mapped_column(Numeric(10,2), nullable=False)
 
     product: Mapped["Product"] = relationship("Product", back_populates="sales")
+
+class Forecast(db.Model):
+    __tablename__ = 'forecasts'
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+
+    product_id: Mapped[int] = mapped_column(Integer, ForeignKey('products.id', ondelete="CASCADE"),nullable=False)
+
+    date: Mapped[Date] = mapped_column(Date, nullable=False)
+    predicted_quantity: Mapped[Numeric] = mapped_column(Numeric(10,2), nullable=False)
+
+    product: Mapped["Product"] = relationship("Product", back_populates="forecasts")
