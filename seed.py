@@ -11,21 +11,13 @@ def seed_database():
     with app.app_context():
 
         # ---- Clear old data (optional) ----
-        db.session.query(Sale).delete()
-        db.session.query(Inventory).delete()
-        db.session.query(Product).delete()
-        db.session.query(User).delete()
-        db.session.commit()
+        # db.session.query(Sale).delete()
+        # db.session.query(Inventory).delete()
+        # db.session.query(Product).delete()
+        # db.session.query(User).delete()
+        # db.session.commit()
 
         # ---- Create test user ----
-        user = User(
-            username="testuser",
-            email="test@test.com",
-            password="12345"
-        )
-
-        db.session.add(user)
-        db.session.commit()
 
         # ---- Sample products ----
         products_data = [
@@ -46,7 +38,7 @@ def seed_database():
         for name, category, price in products_data:
 
             p = Product(
-                user_id=user.id,
+                user_id=1,
                 name=name,
                 category=category,
                 price=price

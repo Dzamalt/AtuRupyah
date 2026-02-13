@@ -1,19 +1,26 @@
 from typing import List, Optional
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy import Integer, String, Numeric, ForeignKey, Date
+from flask_login import UserMixin, login_user, current_user
+from werkzeug.security import generate_password_hash, check_password_hash
 
 from extensions import db
 
-class User(db.Model):
+class User(UserMixin,db.Model):
     __tablename__ = 'users'
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     username: Mapped[str] = mapped_column(String(80), unique=True, nullable=False)
     email: Mapped[str] = mapped_column(String(120), unique=True, nullable=False)
-    password: Mapped[str] = mapped_column(String(120), nullable=False)
+    password_hash: Mapped[str] = mapped_column(String(120), nullable=False)
 
     products: Mapped[List["Product"]] = relationship("Product", back_populates="user")
 
+    def set_password(self, password: str):
+        self.password_hash = generate_password_hash(password)
+
+    def check_password(self, password: str):
+        return check_password_hash(str(self.password_hash), password)
 
 class Product(db.Model):
     __tablename__ = 'products'

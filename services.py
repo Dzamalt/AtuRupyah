@@ -97,16 +97,15 @@ def create_sale(product_id: int, quantity: int, sale_date: date):
     return sale
 
 #TOD: duplicate detection system if userid is same.
-def create_product(name: str, category: str, price: float,initial_quantity: int,reorder_level: int):
+def create_product(user_id,name: str, category: str, price: float,initial_quantity: int,reorder_level: int):
     if not reorder_level:
         reorder_level = 0
     product = Product(
-        user_id=1,
+        user_id=user_id,
         name=name,
         category=category,
         price=price
     )
-    print("DEBUG product:", type(product))
     db.session.add(product)
     db.session.commit()
     inventory = Inventory(
@@ -114,7 +113,6 @@ def create_product(name: str, category: str, price: float,initial_quantity: int,
         quantity=initial_quantity,
         reorder_level=reorder_level
     )
-    print("DEBUG inventory:", type(inventory))
     db.session.add(inventory)
     db.session.commit()
     return product
@@ -131,7 +129,8 @@ def is_low_stock(product_id: int) -> bool:
 
 def update_forecast(product_id,mtd='add'):
     forecast = moving_average(window=7, product_id=product_id)
-    print(type(forecast))
+    if forecast is None:
+        raise ValueError("Not enough sales data")
     if mtd=='add':
         for i in range(0, forecast.index.max() + 1):
             new_fc = Forecast(
@@ -142,8 +141,14 @@ def update_forecast(product_id,mtd='add'):
             db.session.add(new_fc)
         db.session.commit()
     elif mtd=='update':
-        for i in range(0, forecast.index.max() + 1):
-            pass
+        old_forecasts = db.session.execute(db.select(Forecast)).scalars().all()
+        for i,f in enumerate(old_forecasts):
+            f.date = forecast.date.iloc[i]
+            f.predicted_quantity = forecast.predicted_quantity.iloc[i]
+            db.session.add(f)
+        db.session.commit()
+
+
     elif mtd=='delete':
         all_forecast = db.session.execute(db.select(Forecast)).scalars().all()
         for forecast in all_forecast:

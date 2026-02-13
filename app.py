@@ -1,23 +1,19 @@
-from datetime import date, datetime
-from typing import List, Optional
 
 from flask import Flask, abort, render_template, redirect, url_for, flash, request
-from flask_bootstrap import Bootstrap5
-from flask_ckeditor import CKEditor
-from flask_login import UserMixin, login_user, LoginManager, current_user, logout_user
-from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy.orm import relationship, DeclarativeBase, Mapped, mapped_column
 from sqlalchemy import Integer, String, Text, event, ForeignKey, Date, Numeric
 from sqlalchemy.engine import Engine
-from functools import wraps
-from werkzeug.security import generate_password_hash, check_password_hash
-import os
 import sqlite3
 from dotenv import load_dotenv
-from forms import LoginForm, RegisterForm
-from services import product_convertible, sale_convertible, inventory_convertible
 from extensions import db
-from routes import bp
+from test_routes import bp
+from schemas import ma
+from routes.inventory import inventory_bp
+from routes.products import products_bp
+from routes.sales import sales_bp
+from routes.forecasts import forecasts_bp
+from routes.auth import auth_bp
+from flask_jwt_extended import JWTManager
+import os
 
 load_dotenv()
 
@@ -33,25 +29,34 @@ def set_sqlite_pragma(dbapi_connection, connection_record):
         cursor.close()
 
 
+
 def create_app():
     app = Flask(__name__)
     app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
+    app.config['JWT_SECRET_KEY'] = os.getenv('JWT_SECRET_KEY')
     app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DB_URI')
     db.init_app(app)
+    ma.init_app(app)
+
     return app
 
 app = create_app()
+jwt = JWTManager(app)
+print(app.config['SQLALCHEMY_DATABASE_URI'])
 app.register_blueprint(bp)
-# login_manager = LoginManager()
-# login_manager.init_app(app)
-# login_manager.login_view = "login"
-# ^Uncomment when adding users
+app.register_blueprint(inventory_bp, url_prefix='/api/inventory')
+app.register_blueprint(products_bp, url_prefix='/api/products')
+app.register_blueprint(sales_bp, url_prefix='/api/sales')
+app.register_blueprint(forecasts_bp, url_prefix='/api/forecasts')
+app.register_blueprint(auth_bp, url_prefix='/api/auth')
 
 
 
+# with app.app_context():
+#     db.create_all()
 
 
-# Press the green button in the gutter to run the script.
+
 if __name__ == "__main__":
 
     app.run(debug=True, port=5002)

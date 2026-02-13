@@ -8,7 +8,6 @@ from services import add_stock, create_sale, inventory_convertible, product_conv
 from models import User, Product, Inventory, Sale
 from extensions import db
 from analytics import (load_sales_df, total_units_sold, total_revenue,top_products,daily_sales,moving_average)
-from forms import ProductForm
 
 
 
@@ -20,7 +19,7 @@ def hello_world():
 
 @bp.route('/add_product',methods=['GET','POST'])
 def add_product():
-    form = ProductForm()
+    form = None
     if form.validate_on_submit():
         print(form.name.data)
         create_product(
@@ -47,7 +46,7 @@ def see_product():
 @bp.route('/edit_product/<int:product_id>',methods=['GET','POST'])
 def edit_product(product_id):
     product= db.get_or_404(Product, product_id)
-    form = ProductForm(obj=product)
+    form = None
 
     if request.method == 'GET' and product.inventory:
         form.quantity.data = product.inventory.quantity
@@ -87,7 +86,7 @@ def sale_route(pid, amount):
 
 @bp.route("/analytics")
 def analytics_dashboard():
-    update_forecast(2,mtd="delete")
+    update_forecast(2,mtd="update")
     df = load_sales_df()
     total_sold = total_units_sold(df)
     total_sale = total_revenue(df)
@@ -95,8 +94,7 @@ def analytics_dashboard():
     sale_daily = daily_sales(df)
     moving = moving_average(7,2)
     product = db.get_or_404(Product, 2)
-    print(product.inventory.quantity)
-    print(moving.iloc[-1])
+
     if product.inventory.quantity < moving['predicted_quantity'].iloc[-1]:
         print(f"restock this dude by like atleast{moving['predicted_quantity'].iloc[-1] - product.inventory.quantity}")#TODO: replace print with dict key on the product
     return {
@@ -109,7 +107,7 @@ def analytics_dashboard():
 
 #test routes
 
-@bp.route("/get_product_json",methods=['GET','POST'])
+@bp.route("/productsdigi",methods=['GET','POST'])
 def get_product_json():
     query_category = request.args.get("category")
     if query_category:
@@ -121,12 +119,3 @@ def get_product_json():
     else:
         return jsonify({"error": "Category not found"})
 
-@bp.route("/get_inventory_json",methods=['GET','POST'])
-def get_inventory_json():
-    product = db.get_or_404(Product, 2)
-    return jsonify(inventory_convertible(product.inventory))
-
-@bp.route("/get_sale_json",methods=['GET','POST'])
-def get_sale_json():
-    product = db.get_or_404(Product, 2)
-    return jsonify(sale_convertible(product.sales))

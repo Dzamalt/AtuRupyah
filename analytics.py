@@ -8,6 +8,7 @@ from extensions import db
 from models import Sale,Product
 
 
+
 def load_sales_df():
     query = db.session.query(
         Sale.id,
@@ -80,14 +81,12 @@ def prepare_daily_sales(df, product_id):
         .sort_index()
     )
 
-    # Create full date range (daily)
     full_range = pd.date_range(
         start=daily.index.min(),
         end=daily.index.max(),
         freq="D"
     )
 
-    # Fill missing days with 0
     daily = daily.reindex(full_range, fill_value=0)
 
     daily.index.name = "date"
