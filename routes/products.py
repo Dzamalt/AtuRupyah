@@ -1,13 +1,9 @@
-import sqlite3
-
-import sqlalchemy
 from flask import Blueprint,request,jsonify
 from models import Product
 from extensions import db
 from schemas import products_schema,product_schema
 from services import create_product
 from flask_jwt_extended import jwt_required,get_jwt_identity
-from sqlalchemy.exc import IntegrityError
 
 products_bp = Blueprint('products',__name__)
 

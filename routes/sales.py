@@ -1,6 +1,5 @@
 from flask import Blueprint,request,jsonify
 from models import Sale, Product
-from extensions import db
 from schemas import sale_schema,sales_schema
 from services import create_sale
 from datetime import datetime
@@ -30,5 +29,8 @@ def create_sales(p_id):
     product = Product.query.where(Product.user_id==user_id).order_by(Product.id.desc()).where(Product.id == p_id).first()
     if not product:
         return jsonify({'message': 'No product found'}),404
-    sales = create_sale(product_id=p_id,quantity=data['quantity'],sale_date=datetime.now())
+    try:
+        sales = create_sale(product_id=p_id, quantity=data['quantity'], sale_date=datetime.now())
+    except ValueError as e:
+        return jsonify({'message': str(e)}),400
     return jsonify(sale_schema.dump(sales)),200

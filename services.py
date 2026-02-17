@@ -48,9 +48,6 @@ def add_stock(product_id: int, amount: int):
         .where(Inventory.product_id == product_id)
     ).scalar_one_or_none()
 
-    if not inventory:
-        raise ValueError("Inventory not found")
-
     if amount <= 0:
         raise ValueError("Invalid amount")
 
@@ -64,9 +61,6 @@ def remove_stock(product_id: int, amount: int):
         db.select(Inventory)
         .where(Inventory.product_id == product_id)
     ).scalar_one_or_none()
-
-    if not inventory:
-        raise ValueError("Inventory not found")
 
     if inventory.quantity < amount:
         raise ValueError("Not enough stock")

@@ -1,12 +1,11 @@
 from typing import List, Optional
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy import Integer, String, Numeric, ForeignKey, Date
-from flask_login import UserMixin, login_user, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
 
 from extensions import db
 
-class User(UserMixin,db.Model):
+class User(db.Model):
     __tablename__ = 'users'
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)

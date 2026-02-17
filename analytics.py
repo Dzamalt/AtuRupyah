@@ -1,9 +1,4 @@
 import pandas as pd
-import numpy as np
-from sklearn.linear_model import LinearRegression
-import plotly.express as px
-import seaborn as sns
-import matplotlib.pyplot as plt
 from extensions import db
 from models import Sale,Product
 
@@ -52,7 +47,6 @@ def daily_sales(df):
         .sort_index()
     )
 
-    # Convert date keys to strings
     return {
         str(date): int(qty)
         for date, qty in grouped.items()
@@ -62,7 +56,6 @@ def prepare_daily_sales(df, product_id):
 
     product_df = df[df["product_id"] == product_id].copy()
 
-    # Convert to datetime
     product_df["date"] = pd.to_datetime(
         product_df["date"],
         errors="coerce"
@@ -70,10 +63,8 @@ def prepare_daily_sales(df, product_id):
 
     product_df = product_df.dropna(subset=["date"])
 
-    # Normalize time -> 00:00:00
     product_df["date"] = product_df["date"].dt.normalize()
 
-    # Aggregate per day
     daily = (
         product_df
         .groupby("date")["quantity"]

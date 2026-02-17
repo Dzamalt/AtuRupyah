@@ -1,11 +1,10 @@
 
-from flask import Flask, abort, render_template, redirect, url_for, flash, request
-from sqlalchemy import Integer, String, Text, event, ForeignKey, Date, Numeric
+from flask import Flask
+from sqlalchemy import event
 from sqlalchemy.engine import Engine
 import sqlite3
 from dotenv import load_dotenv
 from extensions import db
-from test_routes import bp
 from schemas import ma
 from routes.inventory import inventory_bp
 from routes.products import products_bp
@@ -42,8 +41,6 @@ def create_app():
 
 app = create_app()
 jwt = JWTManager(app)
-print(app.config['SQLALCHEMY_DATABASE_URI'])
-app.register_blueprint(bp)
 app.register_blueprint(inventory_bp, url_prefix='/api/inventory')
 app.register_blueprint(products_bp, url_prefix='/api/products')
 app.register_blueprint(sales_bp, url_prefix='/api/sales')
