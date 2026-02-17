@@ -55,25 +55,6 @@ Authorization: Bearer <access_token>
 
 ---
 
-# Project Structure
-
-project/
-│
-├── app.py
-├── models.py
-├── schemas.py
-├── routes/
-│ ├── auth.py
-│ ├── products.py
-│ ├── inventory.py
-│ ├── sales.py
-│ └── forecasts.py
-│
-└── README.md
-
-
----
-
 # Forecasting
 
 Current implementation uses:
