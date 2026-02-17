@@ -1,47 +1,117 @@
-# AturRupyah
+# AtuRupyah: Inventory Management & Demand Forecasting System
 
-AturRupyah is a web-based inventory management system designed to help small businesses manage products, sales, and stock levels efficiently using data-driven insights.
+RESTful backend system for managing inventory, tracking sales, and predicting future demand using historical data.
 
-## Goal
+This project was built using Flask, SQLAlchemy, and Pandas, with JWT-based authentication and multi-user support.
 
-Many UMKM (Usaha Mikro, Kecil, dan Menengah) in Indonesia still manage inventory manually using notebooks or spreadsheets. This often leads to:
+---
 
-- Inaccurate stock counts  
-- Late restocking and lost sales  
-- Difficulty tracking sales trends  
-- No data-based planning for future demand  
+# Features
 
-AturRupyah solves these problems by automating inventory tracking and using past sales data to support better business decisions.
+- User authentication (JWT)
+- Product management (CRUD)
+- Inventory tracking with automatic stock updates
+- Sales recording and history tracking
+- Demand forecasting using Moving Average
+- RESTful API architecture
 
-## Target Users
+---
 
-- UMKM (small and medium businesses) in Indonesia  
-- Retail shops, kiosks, and small online sellers  
-- Business owners who want simple, affordable inventory control  
-
-## Features
-
-- Track products and sales in real time  
-- Automatically update stock after each transaction  
-- Low-stock warnings to prevent running out of items  
-- Predict future product demand based on historical sales data  
-
-## Tech Stack
+# Tech Stack
 
 **Backend**
-- Flask (Web server & REST API)
-- SQLAlchemy (ORM)
-- PostgreSQL or SQLite (Database)
+- Python
+- Flask
+- SQLAlchemy
+- SQLite
+
+**Authentication**
+- JWT (flask-jwt-extended)
+- Werkzeug password hashing
 
 **Data Processing**
 - Pandas
 - NumPy
 
-**Frontend**
-- HTML
-- CSS
-- JavaScript (Charts & visualizations)
+---
 
-## Purpose
+# API Overview
 
-AturRupyah aims to make inventory management simple, practical, and data-driven for Indonesian UMKM without requiring technical expertise.
+Main endpoints:
+
+/api/auth/register
+/api/auth/login
+
+/api/products
+/api/inventory
+/api/sales
+/api/forecasts
+
+
+All protected endpoints require JWT authentication:
+
+Authorization: Bearer <access_token>
+
+
+---
+
+# Project Structure
+
+project/
+│
+├── app.py
+├── models.py
+├── schemas.py
+├── routes/
+│ ├── auth.py
+│ ├── products.py
+│ ├── inventory.py
+│ ├── sales.py
+│ └── forecasts.py
+│
+└── README.md
+
+
+---
+
+# Forecasting
+
+Current implementation uses:
+
+- Moving Average forecasting
+- Additional experimental forecasting methods
+
+Forecasts are used to recommend reorder quantities.
+
+---
+
+# Status
+
+- Backend complete
+- Authentication implemented
+- Forecasting implemented
+- Documentation complete
+- Not deployed yet
+
+---
+
+# Purpose
+
+This project demonstrates practical backend development skills, including:
+
+- REST API design
+- Database modeling
+- Authentication systems
+- Data analysis integration
+- Modular application architecture
+
+---
+
+# Future Improvements
+
+- Frontend interface
+- Deployment to cloud
+- Advanced forecasting models
+- Role-based access control
+
+---
