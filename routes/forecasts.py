@@ -36,12 +36,12 @@ def get_forecast(p_id):
         try:
             update_forecast(product_id=p_id, mtd='add')
         except ValueError as e:
-            return jsonify({"messege": str(e)}), 400
+            return jsonify({"message": str(e)}), 400
     else:
         try:
             update_forecast(product_id=p_id, mtd='update')
         except ValueError as e:
-            return jsonify({"messege": str(e)}), 400
+            return jsonify({"message": str(e)}), 400
     forecast = Forecast.query.where(Forecast.product).where(Product.user_id == user_id).order_by(Forecast.id.desc()).all()
     return jsonify(forecasts_schema.dump(forecast))
 
