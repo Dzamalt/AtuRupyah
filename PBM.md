@@ -21,10 +21,8 @@ Secara spesifik, tujuan proyek ini meliputi:
 
 - Mengembangkan sistem untuk mengelola produk, inventaris, dan transaksi penjualan
 - Mengimplementasikan autentikasi pengguna menggunakan JWT (JSON Web Token)
-- Memastikan setiap pengguna memiliki data yang terisolasi dan aman
 - Mengimplementasikan analisis data penjualan menggunakan Pandas
 - Mengimplementasikan metode prediksi permintaan menggunakan Moving Average
-- Menyediakan rekomendasi jumlah stok yang perlu ditambahkan berdasarkan hasil prediksi
 - Mengembangkan arsitektur sistem yang modular dan mudah dikembangkan lebih lanjut
 
 Proyek ini difokuskan pada pengembangan backend sebagai fondasi sistem yang kuat dan scalable.
@@ -47,7 +45,6 @@ Proyek ini mengintegrasikan berbagai kompetensi teknis dalam pengembangan perang
 - Perancangan database relasional menggunakan SQLite
 - Penggunaan SQLAlchemy sebagai Object Relational Mapper (ORM)
 - Implementasi relasi antar tabel (User, Product, Inventory, Sale, Forecast)
-- Isolasi data berdasarkan pengguna
 
 ## Authentication dan Security
 
@@ -59,14 +56,6 @@ Proyek ini mengintegrasikan berbagai kompetensi teknis dalam pengembangan perang
 ## Data Processing dan Analytics
 
 - Penggunaan Pandas untuk analisis data penjualan
-- Perhitungan agregasi penjualan
-- Identifikasi pola penjualan historis
-
-## Forecasting dan Decision Support
-
-- Implementasi metode Moving Average untuk prediksi permintaan
-- Pengembangan beberapa metode forecasting tambahan untuk eksperimen dan perbandingan
-- Pembuatan rekomendasi reorder berdasarkan hasil prediksi dan stok saat ini
 
 ## Kompetensi SMM
 
@@ -139,9 +128,6 @@ Tahap akhir mencakup:
 - Refactoring dan pembersihan kode
 - Penambahan validasi input
 - Penanganan error
-- Dokumentasi endpoint API
-- Dokumentasi arsitektur sistem
-
 ---
 
 # Evaluasi dan Refleksi
@@ -150,7 +136,6 @@ Tahap akhir mencakup:
 
 - Arsitektur modular dan terstruktur dengan baik
 - Implementasi autentikasi berbasis JWT yang aman
-- Isolasi data antar pengguna
 - Integrasi analisis data dan forecasting
 - Pemisahan yang jelas antara layer database, logic, dan API
 
