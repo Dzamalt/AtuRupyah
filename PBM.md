@@ -70,9 +70,9 @@ Proyek ini mengintegrasikan berbagai kompetensi teknis dalam pengembangan perang
 
 ## Kompetensi SMM
 
--Berkomitmen, Mandiri.
--Berprinsip
--Berwawasan, Berpikir Kritis, Inovatif
+ - Berkomitmen, Mandiri.
+- Berwawasan, Berpikir Kritis, Inovatif
+- Berprinsip
 
 ---
 
