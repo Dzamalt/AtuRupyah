@@ -3,7 +3,7 @@ from models import Forecast,Product
 from schemas import forecasts_schema
 from flask_jwt_extended import jwt_required,get_jwt_identity
 from analytics import load_sales_df,total_revenue,total_units_sold,top_products,daily_sales
-from services import update_forecast
+from services.forecasts_services import get_forecast,get_basic_dashboard
 forecasts_bp = Blueprint('forecasts',__name__)
 
 @forecasts_bp.route('/',methods=['GET'])
@@ -13,36 +13,12 @@ def index():
 
 @forecasts_bp.route('/dashboard',methods=['GET'])
 @jwt_required()
-def get_basic_analysis():
-    df = load_sales_df()
-    total_sold = total_units_sold(df)
-    total_sale = total_revenue(df)
-    best_product = top_products(df)
-    sale_daily = daily_sales(df)
-    return jsonify({
-        "total_item_sold": total_sold,
-        "total_revenue": total_sale,
-        "best_product": best_product.to_dict(),
-        "sale_daily": sale_daily
-    }
-    )
+def get_basic_analysis_route():
+    return get_basic_dashboard(user_id=get_jwt_identity())
 
 @forecasts_bp.route('/<int:p_id>',methods=['GET'])
 @jwt_required()
-def get_forecast(p_id):
-    user_id = get_jwt_identity()
-    target_forecast = Forecast.query.where(Forecast.product).where(Product.user_id == user_id).order_by(Forecast.id.desc()).all()
-    if not target_forecast:
-        try:
-            update_forecast(product_id=p_id, mtd='add')
-        except ValueError as e:
-            return jsonify({"message": str(e)}), 400
-    else:
-        try:
-            update_forecast(product_id=p_id, mtd='update')
-        except ValueError as e:
-            return jsonify({"message": str(e)}), 400
-    forecast = Forecast.query.where(Forecast.product).where(Product.user_id == user_id).order_by(Forecast.id.desc()).all()
-    return jsonify(forecasts_schema.dump(forecast))
-
+def get_forecast_route(p_id):
+    forecast = get_forecast(user_id=get_jwt_identity(),product_id=p_id)
+    return jsonify(forecast)
 
