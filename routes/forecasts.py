@@ -19,6 +19,5 @@ def get_basic_analysis_route():
 @forecasts_bp.route('/<int:p_id>',methods=['GET'])
 @jwt_required()
 def get_forecast_route(p_id):
-    forecast = get_forecast(user_id=get_jwt_identity(),product_id=p_id)
-    return jsonify(forecast)
+    return get_forecast(user_id=get_jwt_identity(),product_id=p_id)
 
