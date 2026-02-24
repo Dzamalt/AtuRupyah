@@ -7,53 +7,51 @@ from extensions import db
 
 forecasts_bp = Blueprint('forecasts',__name__)
 
-def update_forecast(product_id,mtd='add'):
+def update_forecast(product_id: int, user_id: int):
     forecast = moving_average(window=7, product_id=product_id)
+
     if forecast is None:
-        raise ValueError("Not enough sales data")
-    if mtd=='add':
-        for i in range(0, forecast.index.max() + 1):
+        return jsonify({"message": "Not enough sales"})
+
+    existing = (
+        Forecast.query
+        .filter(Forecast.product_id == product_id)
+        .order_by(Forecast.id.asc())
+        .all()
+    )
+
+    if not existing:
+        for i in range(len(forecast)):
             new_fc = Forecast(
                 product_id=product_id,
-                date=forecast.date.iloc[i],
-                predicted_quantity=forecast.predicted_quantity.iloc[i],
+                date=forecast["date"].iloc[i],
+                predicted_quantity=forecast["predicted_quantity"].iloc[i],
             )
             db.session.add(new_fc)
-        db.session.commit()
-    elif mtd=='update':
-        old_forecasts = db.session.execute(db.select(Forecast)).scalars().all()
-        for i,f in enumerate(old_forecasts):
-            f.date = forecast.date.iloc[i]
-            f.predicted_quantity = forecast.predicted_quantity.iloc[i]
-            db.session.add(f)
-        db.session.commit()
-
-
-    elif mtd=='delete':
-        all_forecast = db.session.execute(db.select(Forecast)).scalars().all()
-        for forecast in all_forecast:
-            db.session.delete(forecast)
-        db.session.commit()
     else:
-        pass
+        for i, f in enumerate(existing):
+            if i >= len(forecast):
+                break
+            f.date = forecast["date"].iloc[i]
+            f.predicted_quantity = forecast["predicted_quantity"].iloc[i]
+
+    db.session.commit()
+
+    return jsonify(forecasts_schema.dump(existing))
 
 
+def update_all_forecasts(user_id:int):
+    products = Product.query.where(Product.user_id == user_id).all()
+    for product in products:
+        update_forecast(user_id=user_id, product_id=product.id)
+    product_forecasts = (Forecast.query.where(Forecast.product).where(Product.user_id == user_id)
+                         .order_by(Forecast.id.desc()).all())
+    return product_forecasts
 
 def get_forecast(user_id:int,product_id:int):
-    target_forecast = Forecast.query.where(Forecast.product).where(Product.user_id == user_id).order_by(
-        Forecast.id.desc()).all()
-    if not target_forecast:
-        try:
-            update_forecast(product_id=product_id, mtd='add')
-        except ValueError as e:
-            return jsonify({"message": str(e)}), 400
-    else:
-        try:
-            update_forecast(product_id=product_id, mtd='update')
-        except ValueError as e:
-            return jsonify({"message": str(e)}), 400
     forecast = Forecast.query.where(Forecast.product).where(Product.user_id == user_id).order_by(
         Forecast.id.desc()).all()
+    update_forecast(product_id=product_id, user_id=user_id)
     return jsonify(forecasts_schema.dump(forecast))
 
 def get_basic_dashboard(user_id:int):

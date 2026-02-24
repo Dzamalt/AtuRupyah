@@ -3,7 +3,7 @@ from models import Forecast,Product
 from schemas import forecasts_schema
 from flask_jwt_extended import jwt_required,get_jwt_identity
 from analytics import load_sales_df,total_revenue,total_units_sold,top_products,daily_sales
-from services.forecasts_services import get_forecast,get_basic_dashboard
+from services.forecasts_services import get_forecast,get_basic_dashboard,update_all_forecasts
 forecasts_bp = Blueprint('forecasts',__name__)
 
 @forecasts_bp.route('/',methods=['GET'])
@@ -14,6 +14,7 @@ def index():
 @forecasts_bp.route('/dashboard',methods=['GET'])
 @jwt_required()
 def get_basic_analysis_route():
+    update_all_forecasts(get_jwt_identity())
     return get_basic_dashboard(user_id=get_jwt_identity())
 
 @forecasts_bp.route('/<int:p_id>',methods=['GET'])
