@@ -12,6 +12,7 @@ from routes.sales import sales_bp
 from routes.forecasts import forecasts_bp
 from routes.auth import auth_bp
 from flask_jwt_extended import JWTManager
+from urllib.parse import quote_plus
 import os
 
 load_dotenv()
@@ -28,12 +29,18 @@ def set_sqlite_pragma(dbapi_connection, connection_record):
         cursor.close()
 
 
-
 def create_app():
+
     app = Flask(__name__)
     app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
     app.config['JWT_SECRET_KEY'] = os.getenv('JWT_SECRET_KEY')
-    app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DB_URI')
+
+
+    password = quote_plus(os.getenv("DB_PASSWORD"))
+
+    db_uri = f"postgresql://{os.getenv('DB_USER')}:{password}@{os.getenv('DB_HOST')}:{os.getenv('DB_PORT')}/{os.getenv('DB_NAME')}"
+    print(db_uri)
+    app.config['SQLALCHEMY_DATABASE_URI'] = db_uri
     db.init_app(app)
     ma.init_app(app)
 
@@ -49,11 +56,8 @@ app.register_blueprint(auth_bp, url_prefix='/api/auth')
 
 
 
-# with app.app_context():
-#     db.create_all()
-
 
 
 if __name__ == "__main__":
 
-    app.run(debug=True, port=5002)
+    app.run(debug=True, port=5000)

@@ -1,8 +1,14 @@
 import pandas as pd
+from flask import jsonify
+from sqlalchemy import func
+from sqlalchemy import select, desc
+from sqlalchemy.orm import joinedload
+
 from extensions import db
-from models import Sale,Product
+from models import Sale,Product, Forecast, Inventory
 
-
+def return_bigger_value(value1, value2):
+    return value1 if value1 > value2 else value2
 
 def load_sales_df():
     query = db.session.query(
@@ -52,9 +58,15 @@ def daily_sales(df):
         for date, qty in grouped.items()
     }
 
+def get_low_stock_products(session):
+    pass
+
 def prepare_daily_sales(df, product_id):
 
     product_df = df[df["product_id"] == product_id].copy()
+
+    if product_df.empty:
+        return None
 
     product_df["date"] = pd.to_datetime(
         product_df["date"],
@@ -62,6 +74,9 @@ def prepare_daily_sales(df, product_id):
     )
 
     product_df = product_df.dropna(subset=["date"])
+
+    if product_df.empty:
+        return None
 
     product_df["date"] = product_df["date"].dt.normalize()
 
@@ -71,6 +86,9 @@ def prepare_daily_sales(df, product_id):
         .sum()
         .sort_index()
     )
+
+    if daily.empty:
+        return None
 
     full_range = pd.date_range(
         start=daily.index.min(),

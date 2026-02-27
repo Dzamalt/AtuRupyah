@@ -43,10 +43,13 @@ def update_inventory(user_id:int,product_id:int,data:dict):
     target_inventory = grab_inventory(user_id=user_id,product_id=product_id)
     if not target_inventory:
         return jsonify({'message': 'Inventory not found'}), 404
-    new_re = data.get('new_re')
+    new_re = data.get('reorder_level')
     if not new_re:
         new_re = target_inventory.reorder_level
-    target_inventory.quantity = data['quantity']
+    new_q = data.get('reorder_level')
+    if not new_q:
+        new_q = target_inventory.quantity
+    target_inventory.quantity = new_q
     target_inventory.reorder_level = new_re
     db.session.add(target_inventory)
     db.session.commit()

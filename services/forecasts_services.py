@@ -2,7 +2,7 @@ from flask import Blueprint,jsonify
 from models import Forecast,Product
 from schemas import forecasts_schema
 from flask_jwt_extended import jwt_required,get_jwt_identity
-from analytics import load_sales_df, total_revenue, total_units_sold, top_products, daily_sales, moving_average
+from analytics import load_sales_df, total_revenue, total_units_sold, top_products, daily_sales, moving_average,get_low_stock_products
 from extensions import db
 
 forecasts_bp = Blueprint('forecasts',__name__)
