@@ -3,8 +3,12 @@
   <component name="NewModuleRootManager">
     <content url="file://$MODULE_DIR$">
       <excludeFolder url="file://$MODULE_DIR$/.venv" />
+      <excludeFolder url="file://$MODULE_DIR$/instance" />
+      <excludeFolder url="file://$MODULE_DIR$/sklearn-env/Include" />
+      <excludeFolder url="file://$MODULE_DIR$/sklearn-env/Lib" />
+      <excludeFolder url="file://$MODULE_DIR$/sklearn-env/Scripts" />
     </content>
-    <orderEntry type="jdk" jdkName="Python 3.13 (AtuRupyah)" jdkType="Python SDK" />
+    <orderEntry type="jdk" jdkName="Python 3.13 (AtuRupyah) (2)" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
   </component>
 </module>

@@ -4,7 +4,6 @@ from extensions import db
 from schemas import products_schema,product_schema
 from flask_jwt_extended import jwt_required,get_jwt_identity
 from services.products_services import get_products, get_product_by_id,create_new_product,update_product,delete_product
-from analytics import check_for_lowstock
 
 products_bp = Blueprint('products',__name__)
 
@@ -19,7 +18,6 @@ def get_all_products_route():
     TBA]
     }
     """
-    check_for_lowstock(get_jwt_identity())
     return jsonify(products_schema.dump(get_products(get_jwt_identity()))),200
 
 @products_bp.route('/<int:p_id>',methods=['GET'])

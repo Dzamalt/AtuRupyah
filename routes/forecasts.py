@@ -2,7 +2,6 @@ from flask import Blueprint,jsonify
 from models import Forecast,Product
 from schemas import forecasts_schema
 from flask_jwt_extended import jwt_required,get_jwt_identity
-from analytics import load_sales_df,total_revenue,total_units_sold,top_products,daily_sales
 from services.forecasts_services import get_forecast,get_basic_dashboard,update_all_forecasts
 forecasts_bp = Blueprint('forecasts',__name__)
 

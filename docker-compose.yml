@@ -1,0 +1,27 @@
+
+services:
+  app:
+    build: .
+    container_name: myapp
+    depends_on:
+      - db
+    environment:
+      - DATABASE_URL=postgresql://postgres:postgres@db:5432/mydb
+      - DB_USER=postgres
+      - DB_PASSWORD=1qaz2wsx3edc@pK
+      - DB_HOST=db
+      - DB_PORT=5432
+      - DB_NAME=aturupyah
+    ports:
+      - "8000:5000"
+
+  db:
+    image: postgres:18
+    container_name: mydb
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 1qaz2wsx3edc@pK
+      POSTGRES_DB: aturupyah
+    ports:
+      - "5432:5432"

@@ -1,5 +1,6 @@
 import logging
 
+
 from flask import jsonify
 from models import User
 from extensions import db

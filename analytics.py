@@ -1,10 +1,14 @@
 import pandas as pd
+from sqlalchemy import func, or_
+
 from extensions import db
-from models import Sale,Product
+from models import Sale, Product, User, Forecast, Inventory
 
 
+def return_bigger_value(value1, value2):
+    return value1 if value1 > value2 else value2
 
-def load_sales_df():
+def load_sales_df(user_id:int):
     query = db.session.query(
         Sale.id,
         Sale.sale_date,
@@ -12,7 +16,7 @@ def load_sales_df():
         Sale.quantity_sold,
         Sale.price_at_sale,
         Product.name.label("product_name"),
-    ).join(Product, Sale.product_id == Product.id)
+    ).join(Product, Sale.product_id == Product.id).filter(Product.user_id == user_id)
     result = query.all()
 
     df = pd.DataFrame(result,columns=[
@@ -52,9 +56,33 @@ def daily_sales(df):
         for date, qty in grouped.items()
     }
 
+def get_low_stock_products(user_id:int):
+    ranked_forecast = (db.session.query(
+        Forecast.product_id,
+        Forecast.predicted_quantity,
+        func.row_number()
+        .over(partition_by=Forecast.product_id,order_by=Forecast.id.desc()).label("rank")
+        )).subquery()
+    latest_forecast = (db.session.query(
+        ranked_forecast.c.product_id,
+        ranked_forecast.c.predicted_quantity
+        ).filter(ranked_forecast.c.rank == 1)).subquery()
+    check_low_stock_products = (db.session.query(Product.name)
+                                .filter(Product.user_id == user_id)
+                                .join(Inventory, Inventory.product_id == Product.id)
+                                .outerjoin(latest_forecast, latest_forecast.c.product_id == Product.id)
+                                .filter(or_(Inventory.quantity <= Inventory.reorder_level,
+                                            Inventory.quantity <= latest_forecast.c.predicted_quantity))
+                                .order_by(Product.id.desc()))
+    result = [name for (name,) in check_low_stock_products.all()]
+    return result
+
 def prepare_daily_sales(df, product_id):
 
     product_df = df[df["product_id"] == product_id].copy()
+
+    if product_df.empty:
+        return None
 
     product_df["date"] = pd.to_datetime(
         product_df["date"],
@@ -62,6 +90,9 @@ def prepare_daily_sales(df, product_id):
     )
 
     product_df = product_df.dropna(subset=["date"])
+
+    if product_df.empty:
+        return None
 
     product_df["date"] = product_df["date"].dt.normalize()
 
@@ -71,6 +102,9 @@ def prepare_daily_sales(df, product_id):
         .sum()
         .sort_index()
     )
+
+    if daily.empty:
+        return None
 
     full_range = pd.date_range(
         start=daily.index.min(),
@@ -85,9 +119,9 @@ def prepare_daily_sales(df, product_id):
 
     return daily.reset_index()
 
-def moving_average(window=7, product_id=None):
+def moving_average(window:int=7, product_id:int=None,user_id:int=None):
 
-    df = load_sales_df()
+    df = load_sales_df(user_id)
     daily = prepare_daily_sales(df, product_id)
 
     if daily is None or len(daily) < 5:

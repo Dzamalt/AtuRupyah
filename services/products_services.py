@@ -9,7 +9,7 @@ def get_products(user_id:int):
     return Product.query.where(Product.user_id == user_id).order_by(Product.id.desc()).all()
 
 def get_product_by_id(user_id:int,product_id:int):
-    product = Product.query.where(Product.user_id == user_id).order_by(Product.id.desc()).where(
+    product = Product.query.where(Product.user_id == user_id).where(
         Product.id == product_id).first()
     if product is None:
         return jsonify({"message": "Product not found"}), 404
