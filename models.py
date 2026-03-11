@@ -1,9 +1,11 @@
 from typing import List, Optional
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from sqlalchemy import Integer, String, Numeric, ForeignKey, Date
+from sqlalchemy import Integer, String, Numeric, ForeignKey, Date, Boolean
 from werkzeug.security import generate_password_hash, check_password_hash
 
 from extensions import db
+
+metadata = db.metadata
 
 class User(db.Model):
     __tablename__ = 'users'
@@ -31,7 +33,6 @@ class Product(db.Model):
     category: Mapped[str] = mapped_column(String(80), nullable=False)
     price: Mapped[Numeric] = mapped_column(Numeric(10,2), nullable=False)
 
-    # Relationships
     inventory: Mapped[Optional["Inventory"]] = relationship(
         "Inventory",
         back_populates="product",
@@ -46,7 +47,6 @@ class Product(db.Model):
         passive_deletes=True
     )
 
-    #to be added
     forecasts: Mapped[List["Forecast"]] = relationship(
         "Forecast",
         back_populates="product",

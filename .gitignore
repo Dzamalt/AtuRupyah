@@ -26,6 +26,8 @@
 .idea/**/dynamic.xml
 .idea/**/uiDesigner.xml
 .idea/**/dbnavigator.xml
+.idea/
+*.iml
 
 # Gradle
 .idea/**/gradle.xml
@@ -287,3 +289,4 @@ poetry.toml
 pyrightconfig.json
 
 # End of https://www.toptal.com/developers/gitignore/api/pycharm,python
+seed.py
