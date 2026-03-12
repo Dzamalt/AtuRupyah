@@ -48,5 +48,6 @@ app.register_blueprint(sales_bp, url_prefix='/api/sales')
 app.register_blueprint(forecasts_bp, url_prefix='/api/forecasts')
 app.register_blueprint(auth_bp, url_prefix='/api/auth')
 
-
+with app.app_context():
+    db.create_all()
 
