@@ -88,7 +88,7 @@ Forecasts are used to recommend reorder quantities.
 
 # Purpose
 
-This project demonstrates practical backend development skills, including:
+This project i made to demonstrates my practical backend development skills, including:
 
 - REST API design
 - Database modeling
