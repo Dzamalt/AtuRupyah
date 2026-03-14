@@ -12,6 +12,7 @@ from routes.sales import sales_bp
 from routes.forecasts import forecasts_bp
 from routes.auth import auth_bp
 from flask_jwt_extended import JWTManager
+from flask_cors import CORS
 from urllib.parse import quote_plus
 import os
 
@@ -30,7 +31,6 @@ def set_sqlite_pragma(dbapi_connection, connection_record):
 
 
 def create_app():
-
     app = Flask(__name__)
     app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
     app.config['JWT_SECRET_KEY'] = os.getenv('JWT_SECRET_KEY')
@@ -41,6 +41,7 @@ def create_app():
     return app
 
 app = create_app()
+CORS(app)
 jwt = JWTManager(app)
 app.register_blueprint(inventory_bp, url_prefix='/api/inventory')
 app.register_blueprint(products_bp, url_prefix='/api/products')

@@ -46,7 +46,7 @@ def update_inventory(user_id:int,product_id:int,data:dict):
     new_re = data.get('reorder_level')
     if not new_re:
         new_re = target_inventory.reorder_level
-    new_q = data.get('reorder_level')
+    new_q = data.get('quantity')
     if not new_q:
         new_q = target_inventory.quantity
     target_inventory.quantity = new_q
