@@ -4,6 +4,15 @@ RESTful backend system for managing inventory, tracking sales, and predicting fu
 
 This project was built using Flask, SQLAlchemy, and Pandas, with JWT-based authentication and multi-user support.
 
+**URL:** https://aturupyah.onrender.com
+
+
+**GitHub:** https://github.com/Dzamalt/AtuRupyah
+
+
+**Documentation:** https://github.com/Dzamalt/AtuRupyah/wiki/AtuRupyah-API-Documentation
+
+
 ---
 
 # Features
@@ -11,6 +20,7 @@ This project was built using Flask, SQLAlchemy, and Pandas, with JWT-based authe
 - User authentication (JWT)
 - Product management (CRUD)
 - Inventory tracking with automatic stock updates
+- Restock recommendation based on past sales
 - Sales recording and history tracking
 - Demand forecasting using Moving Average
 - RESTful API architecture
@@ -23,7 +33,8 @@ This project was built using Flask, SQLAlchemy, and Pandas, with JWT-based authe
 - Python
 - Flask
 - SQLAlchemy
-- SQLite
+- PostgreSQL
+- Alembic
 
 **Authentication**
 - JWT (flask-jwt-extended)
@@ -38,7 +49,7 @@ This project was built using Flask, SQLAlchemy, and Pandas, with JWT-based authe
 # API Overview
 
 Main endpoints:
-
+```
 /api/auth/register
 /api/auth/login
 
@@ -46,11 +57,11 @@ Main endpoints:
 /api/inventory
 /api/sales
 /api/forecasts
-
+```
 
 All protected endpoints require JWT authentication:
 
-Authorization: Bearer <access_token>
+`Authorization: Bearer <access_token>`
 
 
 ---
@@ -60,7 +71,6 @@ Authorization: Bearer <access_token>
 Current implementation uses:
 
 - Moving Average forecasting
-- Additional experimental forecasting methods
 
 Forecasts are used to recommend reorder quantities.
 
@@ -72,27 +82,28 @@ Forecasts are used to recommend reorder quantities.
 - Authentication implemented
 - Forecasting implemented
 - Documentation complete
-- Not deployed yet
+- Deployed
 
 ---
 
 # Purpose
 
-This project demonstrates practical backend development skills, including:
+This project i made to demonstrates my practical backend development skills, including:
 
 - REST API design
 - Database modeling
 - Authentication systems
 - Data analysis integration
 - Modular application architecture
+- Deployment & Production Environment Setup
 
 ---
 
 # Future Improvements
 
-- Frontend interface
-- Deployment to cloud
-- Advanced forecasting models
-- Role-based access control
+- Frontend interface with Bootstrap
+- Advanced forecasting models with Prophet FB
+- Role-based access control for team workflow
+- AI implementation
 
 ---
