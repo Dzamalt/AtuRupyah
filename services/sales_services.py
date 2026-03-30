@@ -37,12 +37,14 @@ def get_product_sales(user_id:int, product_id:int):
     return jsonify(sales_schema.dump(sales)),200
 
 def create_product_sales(user_id:int, product_id:int,data:dict):
+    if data.get('quantity_sold') is None:
+        return jsonify({'messeage': 'Missing Fields'})
     product = Product.query.where(Product.user_id == user_id).order_by(Product.id.desc()).where(
         Product.id == product_id).first()
     if not product:
         return jsonify({'message': 'No product found'}), 404
     try:
-        sales = create_sale(product_id=product_id, quantity=data['quantity'], sale_date=datetime.now())
+        sales = create_sale(product_id=product_id, quantity=data['quantity_sold'], sale_date=datetime.now())
     except ValueError as e:
         return jsonify({'message': str(e)}), 400
     return jsonify(sale_schema.dump(sales)), 200

@@ -51,10 +51,7 @@ def update_all_forecasts(user_id:int):
     return product_forecasts
 
 def get_forecast(user_id:int,product_id:int):
-    update_forecast(product_id=product_id, user_id=user_id)
-    forecast = Forecast.query.where(Forecast.product).where(Product.user_id == user_id).order_by(
-        Forecast.id.desc()).all()
-    return jsonify(forecasts_schema.dump(forecast))
+    return update_forecast(product_id=product_id, user_id=user_id)
 
 def get_basic_dashboard(user_id:int):
     df = load_sales_df(user_id)
@@ -63,7 +60,6 @@ def get_basic_dashboard(user_id:int):
     best_product = top_products(df)
     sale_daily = daily_sales(df)
     danger_product = get_low_stock_products(user_id)
-    print(type(danger_product))
     return jsonify({
         "danger_product": danger_product,
         "total_item_sold": total_sold,
