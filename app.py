@@ -41,7 +41,7 @@ def create_app():
     return app
 
 app = create_app()
-CORS(app)
+CORS(app, origins="*")
 jwt = JWTManager(app)
 app.register_blueprint(inventory_bp, url_prefix='/api/inventory')
 app.register_blueprint(products_bp, url_prefix='/api/products')
@@ -52,3 +52,5 @@ app.register_blueprint(auth_bp, url_prefix='/api/auth')
 with app.app_context():
     db.create_all()
 
+if __name__ == "__main__":
+    app.run(debug=True,port=8000)
