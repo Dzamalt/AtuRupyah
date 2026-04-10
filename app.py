@@ -11,6 +11,7 @@ from routes.products import products_bp
 from routes.sales import sales_bp
 from routes.forecasts import forecasts_bp
 from routes.auth import auth_bp
+from routes.default import default_bp
 from flask_jwt_extended import JWTManager
 from flask_cors import CORS
 from urllib.parse import quote_plus
@@ -43,6 +44,7 @@ def create_app():
 app = create_app()
 CORS(app, origins="*")
 jwt = JWTManager(app)
+app.register_blueprint(default_bp)
 app.register_blueprint(inventory_bp, url_prefix='/api/inventory')
 app.register_blueprint(products_bp, url_prefix='/api/products')
 app.register_blueprint(sales_bp, url_prefix='/api/sales')
