@@ -1,0 +1,92 @@
+from typing import List, Optional
+from sqlalchemy.orm import Mapped, mapped_column, relationship
+from sqlalchemy import Integer, String, Numeric, ForeignKey, Date, Boolean
+from werkzeug.security import generate_password_hash, check_password_hash
+
+from extensions import db
+
+metadata = db.metadata
+
+class User(db.Model):
+    __tablename__ = 'users'
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    username: Mapped[str] = mapped_column(String(80), unique=True, nullable=False)
+    email: Mapped[str] = mapped_column(String(120), unique=True, nullable=False)
+    password_hash: Mapped[str] = mapped_column(String(255), nullable=False)
+
+    products: Mapped[List["Product"]] = relationship("Product", back_populates="user")
+
+    def set_password(self, password: str):
+        self.password_hash = generate_password_hash(password)
+
+    def check_password(self, password: str):
+        return check_password_hash(str(self.password_hash), password)
+
+class Product(db.Model):
+    __tablename__ = 'products'
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    user_id: Mapped[int] = mapped_column(Integer, ForeignKey('users.id', ondelete="CASCADE"), nullable=False)
+
+    name: Mapped[str] = mapped_column(String(80), nullable=False)
+    category: Mapped[str] = mapped_column(String(80), nullable=False)
+    price: Mapped[Numeric] = mapped_column(Numeric(10,2), nullable=False)
+
+    inventory: Mapped[Optional["Inventory"]] = relationship(
+        "Inventory",
+        back_populates="product",
+        uselist=False,
+        passive_deletes=True
+    )
+
+    sales: Mapped[List["Sale"]] = relationship(
+        "Sale",
+        back_populates="product",
+        cascade="all, delete-orphan",
+        passive_deletes=True
+    )
+
+    forecasts: Mapped[List["Forecast"]] = relationship(
+        "Forecast",
+        back_populates="product",
+        cascade="all, delete-orphan",
+        passive_deletes=True
+    )
+
+    user: Mapped["User"] = relationship("User", back_populates="products")
+
+
+class Inventory(db.Model):
+    __tablename__ = 'inventories'
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    product_id: Mapped[int] = mapped_column(Integer, ForeignKey('products.id', ondelete="CASCADE"), nullable=False)
+    quantity: Mapped[int] = mapped_column(Integer, nullable=False)
+    reorder_level: Mapped[int] = mapped_column(Integer, nullable=False)
+
+    product: Mapped["Product"] = relationship("Product", back_populates="inventory")
+
+
+class Sale(db.Model):
+    __tablename__ = 'sales'
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    product_id: Mapped[int] = mapped_column(Integer, ForeignKey('products.id', ondelete="CASCADE"), nullable=False)
+
+    quantity_sold: Mapped[int] = mapped_column(Integer, nullable=False)
+    sale_date: Mapped[Date] = mapped_column(Date, nullable=False)
+    price_at_sale: Mapped[Numeric] = mapped_column(Numeric(10,2), nullable=False)
+
+    product: Mapped["Product"] = relationship("Product", back_populates="sales")
+
+class Forecast(db.Model):
+    __tablename__ = 'forecasts'
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+
+    product_id: Mapped[int] = mapped_column(Integer, ForeignKey('products.id', ondelete="CASCADE"),nullable=False)
+
+    date: Mapped[Date] = mapped_column(Date, nullable=False)
+    predicted_quantity: Mapped[Numeric] = mapped_column(Numeric(10,2), nullable=False)
+
+    product: Mapped["Product"] = relationship("Product", back_populates="forecasts")

@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AtuRupyah API Docs</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0b0e14;
+      --surface: #131720;
+      --border: #1f2735;
+      --accent: #00e5a0;
+      --accent2: #00aaff;
+      --text: #e2e8f0;
+      --muted: #64748b;
+      --get: #00e5a0;
+      --post: #f59e0b;
+      --put: #6366f1;
+      --patch: #8b5cf6;
+      --delete: #ef4444;
+      --radius: 10px;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Syne', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; display: flex; }
+    aside { width: 260px; min-height: 100vh; background: var(--surface); border-right: 1px solid var(--border); display: flex; flex-direction: column; position: sticky; top: 0; height: 100vh; overflow-y: auto; flex-shrink: 0; }
+    .logo-area { padding: 28px 24px 20px; border-bottom: 1px solid var(--border); }
+    .logo-area h1 { font-size: 1.2rem; font-weight: 800; letter-spacing: -0.02em; background: linear-gradient(135deg, var(--accent), var(--accent2)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .logo-area span { font-size: 0.7rem; color: var(--muted); font-family: 'DM Mono', monospace; display: block; margin-top: 4px; }
+    nav { padding: 16px 0; }
+    .nav-section { padding: 6px 24px 2px; font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); font-weight: 600; }
+    nav a { display: flex; align-items: center; gap: 10px; padding: 8px 24px; text-decoration: none; color: var(--muted); font-size: 0.82rem; font-weight: 500; transition: color 0.15s, background 0.15s; border-left: 2px solid transparent; }
+    nav a:hover { color: var(--text); background: rgba(255,255,255,0.04); border-left-color: var(--accent); }
+    nav a .dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+    main { flex: 1; padding: 48px 56px; max-width: 860px; }
+    .hero { margin-bottom: 56px; padding-bottom: 40px; border-bottom: 1px solid var(--border); }
+    .hero-badge { display: inline-block; font-family: 'DM Mono', monospace; font-size: 0.7rem; background: rgba(0,229,160,0.1); color: var(--accent); border: 1px solid rgba(0,229,160,0.3); padding: 4px 10px; border-radius: 4px; margin-bottom: 16px; letter-spacing: 0.05em; }
+    .hero h2 { font-size: 2.6rem; font-weight: 800; letter-spacing: -0.04em; line-height: 1.1; margin-bottom: 14px; }
+    .hero h2 span { background: linear-gradient(135deg, var(--accent), var(--accent2)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .hero p { color: var(--muted); font-size: 0.95rem; line-height: 1.7; max-width: 560px; }
+    .base-url-box { margin-top: 24px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px 18px; display: flex; align-items: center; gap: 12px; }
+    .base-url-box label { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); white-space: nowrap; }
+    .base-url-box code { font-family: 'DM Mono', monospace; font-size: 0.85rem; color: var(--accent2); }
+    .section { margin-bottom: 56px; }
+    .section-title { font-size: 1.4rem; font-weight: 800; letter-spacing: -0.03em; margin-bottom: 6px; }
+    .section-sub { color: var(--muted); font-size: 0.85rem; margin-bottom: 24px; line-height: 1.6; }
+    .steps { display: flex; flex-direction: column; gap: 0; margin: 0 0 16px; }
+    .step { display: flex; gap: 16px; padding: 10px 0; }
+    .step-num { width: 28px; height: 28px; border-radius: 50%; background: rgba(0,229,160,0.1); border: 1px solid rgba(0,229,160,0.3); color: var(--accent); font-size: 0.72rem; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 2px; }
+    .step p { font-size: 0.88rem; color: var(--text); line-height: 1.6; padding-top: 4px; }
+    .code-block { background: #0d1117; border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; margin: 16px 0; }
+    .code-header { display: flex; align-items: center; justify-content: space-between; padding: 10px 16px; background: var(--surface); border-bottom: 1px solid var(--border); }
+    .code-header span { font-size: 0.72rem; font-family: 'DM Mono', monospace; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; }
+    pre { padding: 18px; font-family: 'DM Mono', monospace; font-size: 0.82rem; line-height: 1.7; color: #a0b4c8; overflow-x: auto; white-space: pre; }
+    pre .key { color: #7dd3fc; }
+    pre .str { color: #86efac; }
+    pre .com { color: #475569; font-style: italic; }
+    pre .url { color: var(--accent2); }
+    .endpoint { border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; margin-bottom: 8px; transition: border-color 0.15s; }
+    .endpoint:hover { border-color: #2d3a4e; }
+    .endpoint-row { display: flex; align-items: center; gap: 14px; padding: 14px 18px; background: var(--surface); cursor: pointer; user-select: none; }
+    .method { font-family: 'DM Mono', monospace; font-size: 0.7rem; font-weight: 500; padding: 3px 9px; border-radius: 5px; min-width: 58px; text-align: center; letter-spacing: 0.04em; }
+    .GET    { background: rgba(0,229,160,0.12); color: var(--get); }
+    .POST   { background: rgba(245,158,11,0.12); color: var(--post); }
+    .PUT    { background: rgba(99,102,241,0.12); color: var(--put); }
+    .PATCH  { background: rgba(139,92,246,0.12); color: var(--patch); }
+    .DELETE { background: rgba(239,68,68,0.12); color: var(--delete); }
+    .endpoint-path { font-family: 'DM Mono', monospace; font-size: 0.82rem; color: var(--text); flex: 1; }
+    .endpoint-desc { font-size: 0.78rem; color: var(--muted); }
+    .endpoint-details { padding: 0 18px 16px; background: #0d1117; border-top: 1px solid var(--border); display: none; }
+    .endpoint-details.open { display: block; }
+    .endpoint-details p { font-size: 0.82rem; color: var(--muted); margin: 14px 0 8px; line-height: 1.6; }
+    .auth-note { display: inline-flex; align-items: center; gap: 6px; font-size: 0.72rem; color: var(--accent2); background: rgba(0,170,255,0.08); border: 1px solid rgba(0,170,255,0.2); padding: 3px 10px; border-radius: 4px; margin-top: 8px; font-family: 'DM Mono', monospace; }
+    .info-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px 22px; margin: 20px 0; }
+    .info-card h4 { font-size: 0.82rem; font-weight: 700; margin-bottom: 12px; color: var(--text); }
+    .info-card ul { list-style: none; display: flex; flex-direction: column; gap: 8px; }
+    .info-card li { font-size: 0.82rem; color: var(--muted); display: flex; align-items: center; gap: 8px; }
+    .info-card li::before { content: '→'; color: var(--accent); font-size: 0.75rem; }
+    .group-label { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); margin-bottom: 12px; font-weight: 600; }
+    .chevron { color: var(--muted); font-size: 0.75rem; transition: transform 0.2s; }
+    .endpoint-row.open .chevron { transform: rotate(180deg); }
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: #1f2735; border-radius: 3px; }
+    @media (max-width: 768px) { aside { display: none; } main { padding: 28px 24px; } .hero h2 { font-size: 1.8rem; } }
+  </style>
+</head>
+<body>
+
+<aside>
+  <div class="logo-area">
+    <h1>AtuRupyah</h1>
+    <span>API REFERENCE v1.0</span>
+  </div>
+  <nav>
+    <div class="nav-section">Overview</div>
+    <a href="#intro">Introduction</a>
+    <a href="#getting-started">Getting Started</a>
+    <a href="#auth-section">Authentication</a>
+    <a href="#overview">Endpoints Overview</a>
+    <div class="nav-section" style="margin-top:8px">Endpoints</div>
+    <a href="#auth-endpoints"><span class="dot" style="background:#f59e0b"></span> Auth</a>
+    <a href="#products-endpoints"><span class="dot" style="background:#00e5a0"></span> Products</a>
+    <a href="#inventory-endpoints"><span class="dot" style="background:#6366f1"></span> Inventory</a>
+    <a href="#sales-endpoints"><span class="dot" style="background:#f59e0b"></span> Sales</a>
+    <a href="#forecasts-endpoints"><span class="dot" style="background:#00aaff"></span> Forecasts</a>
+  </nav>
+</aside>
+
+<main>
+  <div class="hero" id="intro">
+    <div class="hero-badge">REST API · JSON · JWT</div>
+    <h2>AtuRupyah<br><span>API Documentation</span></h2>
+    <p>Manage products, inventory, sales, and demand forecasting for your business. Get low-stock alerts and insights in one unified API.</p>
+    <div class="base-url-box">
+      <label>Base URL</label>
+      <code>https://aturupyah.onrender.com/api</code>
+    </div>
+  </div>
+
+  <div class="section" id="getting-started">
+    <div class="section-title">Getting Started</div>
+    <div class="section-sub">Everything you need to make your first request in minutes.</div>
+    <div class="info-card">
+      <h4>Prerequisites</h4>
+      <ul>
+        <li>All requests and responses use <strong>JSON</strong> format</li>
+        <li>Include <code style="font-family:'DM Mono',monospace;font-size:0.8rem;color:#86efac">Content-Type: application/json</code> on all requests</li>
+        <li>Protected routes require a Bearer JWT token</li>
+      </ul>
+    </div>
+    <div class="group-label">Typical Workflow</div>
+    <div class="steps">
+      <div class="step"><div class="step-num">1</div><p>Register a new user account via <code style="font-family:'DM Mono',monospace;color:var(--accent)">/auth/register</code></p></div>
+      <div class="step"><div class="step-num">2</div><p>Authenticate your credentials to receive a JWT access token</p></div>
+      <div class="step"><div class="step-num">3</div><p>Pass the token in the <code style="font-family:'DM Mono',monospace;color:var(--accent2)">Authorization: Bearer &lt;token&gt;</code> header</p></div>
+      <div class="step"><div class="step-num">4</div><p>Manage products, inventory, sales, and view forecasts</p></div>
+    </div>
+  </div>
+
+  <div class="section" id="auth-section">
+    <div class="section-title">Authentication</div>
+    <div class="section-sub">AtuRupyah uses Flask JWT. Authenticate once, then attach the token to every protected request.</div>
+    <div class="group-label">Login Request</div>
+    <div class="code-block">
+      <div class="code-header"><span>POST /auth/login</span></div>
+      <pre><span class="com">// Request body</span>
+{
+  <span class="key">"username"</span>: <span class="str">"your_username"</span>,
+  <span class="key">"password"</span>: <span class="str">"your_password"</span>
+}
+
+<span class="com">// Response</span>
+{
+  <span class="key">"access_token"</span>: <span class="str">"eyJhbGciOiJIUzI1NiIs..."</span>
+}</pre>
+    </div>
+    <div class="group-label" style="margin-top:20px">Using the Token</div>
+    <div class="code-block">
+      <div class="code-header"><span>Authorization Header</span></div>
+      <pre><span class="key">Authorization</span>: Bearer <span class="str">&lt;access_token&gt;</span></pre>
+    </div>
+  </div>
+
+  <div class="section" id="overview">
+    <div class="section-title">Endpoints Overview</div>
+    <div class="section-sub">A quick reference of all available routes grouped by resource.</div>
+    <div class="code-block">
+      <div class="code-header"><span>All Routes</span></div>
+      <pre><span class="com">── Auth ──────────────────────────────────────</span>
+<span style="color:#f59e0b">POST</span>   <span class="url">/auth/register</span>
+<span style="color:#f59e0b">POST</span>   <span class="url">/auth/login</span>
+
+<span class="com">── Products ──────────────────────────────────</span>
+<span style="color:#00e5a0">GET</span>    <span class="url">/products</span>                <span class="com">→ All products</span>
+<span style="color:#00e5a0">GET</span>    <span class="url">/products/{id}</span>           <span class="com">→ Single product</span>
+<span style="color:#f59e0b">POST</span>   <span class="url">/products</span>                <span class="com">→ Create product</span>
+<span style="color:#6366f1">PUT</span>    <span class="url">/products/{id}</span>           <span class="com">→ Update product</span>
+<span style="color:#ef4444">DELETE</span> <span class="url">/products/{id}</span>           <span class="com">→ Delete product</span>
+
+<span class="com">── Inventory ─────────────────────────────────</span>
+<span style="color:#00e5a0">GET</span>    <span class="url">/inventory/{product_id}</span>  <span class="com">→ View levels</span>
+<span style="color:#6366f1">PUT</span>    <span class="url">/inventory/{product_id}</span>  <span class="com">→ Update inventory</span>
+<span style="color:#8b5cf6">PATCH</span>  <span class="url">/inventory/{product_id}</span>  <span class="com">→ Restock</span>
+
+<span class="com">── Sales ─────────────────────────────────────</span>
+<span style="color:#00e5a0">GET</span>    <span class="url">/sales</span>                   <span class="com">→ All sales history</span>
+<span style="color:#00e5a0">GET</span>    <span class="url">/sales/{product_id}</span>      <span class="com">→ Product sales history</span>
+<span style="color:#f59e0b">POST</span>   <span class="url">/sales/{product_id}</span>      <span class="com">→ Record a sale</span>
+
+<span class="com">── Forecasts ─────────────────────────────────</span>
+<span style="color:#00e5a0">GET</span>    <span class="url">/forecasts/{product_id}</span>  <span class="com">→ Moving avg forecast</span>
+<span style="color:#00e5a0">GET</span>    <span class="url">/forecasts/dashboard</span>     <span class="com">→ All products overview</span></pre>
+    </div>
+  </div>
+
+  <!-- AUTH ENDPOINTS -->
+  <div class="section" id="auth-endpoints">
+    <div class="section-title">Auth</div>
+    <div class="section-sub">Register and authenticate users to receive JWT tokens.</div>
+    <div class="endpoint">
+      <div class="endpoint-row" onclick="toggle(this)">
+        <span class="method POST">POST</span>
+        <span class="endpoint-path">/auth/register</span>
+        <span class="endpoint-desc">Register a new user account</span>
+        <span class="chevron">▾</span>
+      </div>
+      <div class="endpoint-details">
+        <p>Creates a new user account. No authentication required.</p>
+        <div class="code-block"><div class="code-header"><span>Request Body</span></div>
+        <pre>{
+  <span class="key">"username"</span>: <span class="str">"string"</span>,
+  <span class="key">"password"</span>: <span class="str">"string"</span>
+}</pre></div>
+      </div>
+    </div>
+    <div class="endpoint">
+      <div class="endpoint-row" onclick="toggle(this)">
+        <span class="method POST">POST</span>
+        <span class="endpoint-path">/auth/login</span>
+        <span class="endpoint-desc">Authenticate and receive JWT token</span>
+        <span class="chevron">▾</span>
+      </div>
+      <div class="endpoint-details">
+        <p>Authenticate with your credentials. Returns an access token for subsequent requests.</p>
+        <div class="code-block"><div class="code-header"><span>Request Body</span></div>
+        <pre>{
+  <span class="key">"username"</span>: <span class="str">"your_username"</span>,
+  <span class="key">"password"</span>: <span class="str">"your_password"</span>
+}</pre></div>
+        <div class="code-block"><div class="code-header"><span>Response 200</span></div>
+        <pre>{
+  <span class="key">"access_token"</span>: <span class="str">"eyJhbGci..."</span>
+}</pre></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PRODUCTS ENDPOINTS -->
+  <div class="section" id="products-endpoints">
+    <div class="section-title">Products</div>
+    <div class="section-sub">Full CRUD operations for managing your product catalog.</div>
+    <div class="endpoint">
+      <div class="endpoint-row" onclick="toggle(this)">
+        <span class="method GET">GET</span>
+        <span class="endpoint-path">/products</span>
+        <span class="endpoint-desc">Retrieve all products</span>
+        <span class="chevron">▾</span>
+      </div>
+      <div class="endpoint-details">
+        <p>Returns a list of all products in the system.</p>
+        <span class="auth-note">🔒 Requires JWT</span>
+      </div>
+    </div>
+    <div class="endpoint">
+      <div class="endpoint-row" onclick="toggle(this)">
+        <span class="method GET">GET</span>
+        <span class="endpoint-path">/products/{id}</span>
+        <span class="endpoint-desc">Retrieve a specific product</span>
+        <span class="chevron">▾</span>
+      </div>
+      <div class="endpoint-details">
+        <p>Returns details for a single product by its ID.</p>
+        <span class="auth-note">🔒 Requires JWT</span>
+      </div>
+    </div>
+    <div class="endpoint">
+      <div class="endpoint-row" onclick="toggle(this)">
+        <span class="method POST">POST</span>
+        <span class="endpoint-path">/products</span>
+        <span class="endpoint-desc">Create a new product</span>
+        <span class="chevron">▾</span>
+      </div>
+      <div class="endpoint-details">
+        <p>Adds a new product to the catalog.</p>
+        <span class="auth-note">🔒 Requires JWT</span>
+        <div class="code-block" style="margin-top:12px"><div class="code-header"><span>Request Body</span></div>
+        <pre>{
+  <span class="key">"name"</span>: <span class="str">"string"</span>,
+  <span class="key">"description"</span>: <span class="str">"string"</span>,
+  <span class="key">"price"</span>: <span class="str">number</span>
+}</pre></div>
+      </div>
+    </div>
+    <div class="endpoint">
+      <div class="endpoint-row" onclick="toggle(this)">
+        <span class="method PUT">PUT</span>
+        <span class="endpoint-path">/products/{id}</span>
+        <span class="endpoint-desc">Update a product</span>
+        <span class="chevron">▾</span>
+      </div>
+      <div class="endpoint-details">
+        <p>Fully replaces the product record for the given ID.</p>
+        <span class="auth-note">🔒 Requires JWT</span>
+      </div>
+    </div>
+    <div class="endpoint">
+      <div class="endpoint-row" onclick="toggle(this)">
+        <span class="method DELETE">DELETE</span>
+        <span class="endpoint-path">/products/{id}</span>
+        <span class="endpoint-desc">Delete a product</span>
+        <span class="chevron">▾</span>
+      </div>
+      <div class="endpoint-details">
+        <p>Permanently removes the product from the catalog.</p>
+        <span class="auth-note">🔒 Requires JWT</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- INVENTORY ENDPOINTS -->
+  <div class="section" id="inventory-endpoints">
+    <div class="section-title">Inventory</div>
+    <div class="section-sub">Monitor and manage stock levels with low-stock alert support.</div>
+    <div class="endpoint">
+      <div class="endpoint-row" onclick="toggle(this)">
+        <span class="method GET">GET</span>
+        <span class="endpoint-path">/inventory/{product_id}</span>
+        <span class="endpoint-desc">View inventory levels</span>
+        <span class="chevron">▾</span>
+      </div>
+      <div class="endpoint-details">
+        <p>Returns current stock quantity and any low-stock alerts for the given product.</p>
+        <span class="auth-note">🔒 Requires JWT</span>
+      </div>
+    </div>
+    <div class="endpoint">
+      <div class="endpoint-row" onclick="toggle(this)">
+        <span class="method PUT">PUT</span>
+        <span class="endpoint-path">/inventory/{product_id}</span>
+        <span class="endpoint-desc">Update product inventory</span>
+        <span class="chevron">▾</span>
+      </div>
+      <div class="endpoint-details">
+        <p>Sets or replaces the inventory quantity for a product.</p>
+        <span class="auth-note">🔒 Requires JWT</span>
+        <div class="code-block" style="margin-top:12px"><div class="code-header"><span>Request Body</span></div>
+        <pre>{
+  <span class="key">"quantity"</span>: <span class="str">number,</span>
+  <span class="key">"reorder_level"</span>: <span class="str">number</span>
+}</pre></div>
+      </div>
+    </div>
+    <div class="endpoint">
+      <div class="endpoint-row" onclick="toggle(this)">
+        <span class="method PATCH">PATCH</span>
+        <span class="endpoint-path">/inventory/{product_id}</span>
+        <span class="endpoint-desc">Restock product inventory</span>
+        <span class="chevron">▾</span>
+      </div>
+      <div class="endpoint-details">
+        <p>Adds stock to an existing inventory record — useful for partial restocking operations.</p>
+        <span class="auth-note">🔒 Requires JWT</span>
+        <div class="code-block" style="margin-top:12px"><div class="code-header"><span>Request Body</span></div>
+        <pre>{
+  <span class="key">"quantity"</span>: <span class="str">number</span>
+}</pre></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SALES ENDPOINTS -->
+  <div class="section" id="sales-endpoints">
+    <div class="section-title">Sales</div>
+    <div class="section-sub">Track and record sale transactions across your product catalog.</div>
+    <div class="endpoint">
+      <div class="endpoint-row" onclick="toggle(this)">
+        <span class="method GET">GET</span>
+        <span class="endpoint-path">/sales</span>
+        <span class="endpoint-desc">Retrieve all sales history</span>
+        <span class="chevron">▾</span>
+      </div>
+      <div class="endpoint-details">
+        <p>Returns the complete sales transaction history across all products.</p>
+        <span class="auth-note">🔒 Requires JWT</span>
+      </div>
+    </div>
+    <div class="endpoint">
+      <div class="endpoint-row" onclick="toggle(this)">
+        <span class="method GET">GET</span>
+        <span class="endpoint-path">/sales/{product_id}</span>
+        <span class="endpoint-desc">Retrieve sales for a product</span>
+        <span class="chevron">▾</span>
+      </div>
+      <div class="endpoint-details">
+        <p>Returns sales history filtered to a specific product.</p>
+        <span class="auth-note">🔒 Requires JWT</span>
+      </div>
+    </div>
+    <div class="endpoint">
+      <div class="endpoint-row" onclick="toggle(this)">
+        <span class="method POST">POST</span>
+        <span class="endpoint-path">/sales/{product_id}</span>
+        <span class="endpoint-desc">Record a sale transaction</span>
+        <span class="chevron">▾</span>
+      </div>
+      <div class="endpoint-details">
+        <p>Logs a new sale for the given product and decrements inventory accordingly.</p>
+        <span class="auth-note">🔒 Requires JWT</span>
+        <div class="code-block" style="margin-top:12px"><div class="code-header"><span>Request Body</span></div>
+        <pre>{
+  <span class="key">"quantity_sold"</span>: <span class="str">number</span>
+}</pre></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FORECASTS ENDPOINTS -->
+  <div class="section" id="forecasts-endpoints">
+    <div class="section-title">Forecasts</div>
+    <div class="section-sub">Demand forecasting using moving averages with a full dashboard overview and restock recommendations.</div>
+    <div class="endpoint">
+      <div class="endpoint-row" onclick="toggle(this)">
+        <span class="method GET">GET</span>
+        <span class="endpoint-path">/forecasts/{product_id}</span>
+        <span class="endpoint-desc">Get demand forecast</span>
+        <span class="chevron">▾</span>
+      </div>
+      <div class="endpoint-details">
+        <p>Returns a moving average demand forecast for the specified product based on historical sales data.</p>
+        <span class="auth-note">🔒 Requires JWT</span>
+      </div>
+    </div>
+    <div class="endpoint">
+      <div class="endpoint-row" onclick="toggle(this)">
+        <span class="method GET">GET</span>
+        <span class="endpoint-path">/forecasts/dashboard</span>
+        <span class="endpoint-desc">Get all products overview</span>
+        <span class="chevron">▾</span>
+      </div>
+      <div class="endpoint-details">
+        <p>Returns a full dashboard view of all products including inventory status, sales trends, and restock recommendations.</p>
+        <span class="auth-note">🔒 Requires JWT</span>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<script>
+  function toggle(row) {
+    const details = row.nextElementSibling;
+    const isOpen = details.classList.contains('open');
+    details.classList.toggle('open', !isOpen);
+    row.classList.toggle('open', !isOpen);
+  }
+</script>
+</body>
+</html>
