@@ -1,4 +1,3 @@
-
 from flask import Flask
 from sqlalchemy import event
 from sqlalchemy.engine import Engine
@@ -18,9 +17,6 @@ from urllib.parse import quote_plus
 import os
 
 load_dotenv()
-
-
-
 
 
 @event.listens_for(Engine, "connect")
