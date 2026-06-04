@@ -4,9 +4,9 @@ default_bp = Blueprint("default", __name__)
 
 @default_bp.route("/")
 def index():
-    return render_template("wiki.html")
+    return render_template("index.html")
 @default_bp.route("/wiki")
 def wiki():
-    return redirect("https://github.com/Dzamalt/AtuRupyah/wiki/AtuRupyah-API-Documentation")
+    return render_template("wiki.html")
 
 
